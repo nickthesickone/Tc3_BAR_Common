@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="FB_Alarm" Id="{969aa0c0-5b48-4116-b2b9-42f210740f10}" SpecialFunc="None">
+    <Declaration><![CDATA[{region "Documentation"}
+(*
+Функциональный блок обработки аварии
+====================================
+:Date: 2019-11-21
+Служит для отображения аварий в текущем списке аварий и ведения истории.
+В одном проекте может быть обьявлено максимум 1000 функциональных блоков FB_Alarm.
+Максимальная глубина журнала аварий 1000.
+
+Принцип использования
+=====================
+1. В библиотеке есть готовые экземпляры визуализации с таблицей текущих активных аварий: *Current_Alarms*
+	и журналом аварий *History_Alarms*. Их следует добавить в проект, если есть необходимость в графическом отображении.
+2. Перед обьявлением экземпляров обязательно следует добавить в исполняемый код программу *PRG_Alarms_Core();* 	 
+	В этой подпрограмме происходят вызовы всех экземпляров FB_Alarm, а также всё необходимое для корректной работы системы вцелом.
+3. После объявления *FB_Alarm*. Все что требуется для его использования это задать параметры и аварийное условие.
+
+4. По переднему фронту *fbAlarm.AlarmEvent* активируется аварийная блокировка ("1" на выходе fbAlarm.isActive).
+	 По заднему фронту входа *fbAlarm.AlarmEvent*Аварийная блокировкка снимется ("0" на выходе fbAlarm.isActive) в зависимости от типа аварии: 
+====================  ========================================================
+Alarm_Type           	Поведение по заднему фронту *fbAlarm.AlarmEvent*
+====================  ========================================================
+Local_Quit       		Снимается только после локального квитирования аварии
+	 					LibAlarms.bLocalQuitAllAlarms - глобальная переменная 
+						сброса квитирования всех активных аварий
+						fbAlarm.bQuitAlarm - квитирование аварии экземпляра ФБ                 		
+Alarm_ScadaQuit    		Снимается только после локального квитирования аварии
+	 					LibAlarms.bLocalQuitAllAlarms - глобальная переменная 
+						сброса квитирования всех активных аварий
+	 					LibAlarms.bRemoteQuitAllAlarms - глобальная переменная 
+						сброса квитирования всех активных аварий 							 
+						fbAlarm.bQuitAlarm - квитирование аварии экземпляра ФБ
+Alarm_NoQuit	    	Снимается сразу по заднему фронту *fbAlarm.AlarmEvent*
+	 					Если не была квитирована, то об этом появиться запись в
+						журнале
+Warning_RecordOnly   	Делает запись в журнал по переднему фронту *fbAlarm.AlarmEvent*
+    	 			 	Снимается без квитирования.
+===================   ========================================================
+5. Для отображения списка текущих аварий нужно использовать диалоговое окно TcSakhnenko.Current_Allarms_dialog
+	 Для отображения журнала аварий нужно использовать диалоговое окно TcSakhnenko.History_Of_Allarms_dialog
+*)
+{endregion}
+FUNCTION_BLOCK FINAL FB_Alarm	
+VAR_INPUT
+	AlarmCheckIsEnable: 		BOOL:=TRUE;		(*Проверка аварийного условия активна*)
+	AlarmEvent: 				BOOL:=FALSE; 	(*Условие срабатывания аварии*)
+	bQuitAlarm:    				BOOL:=FALSE;	(*Команда на квитирование аварии, 1-квитирование*)
+	AlarmType: 					AlarmType; 		(*Тип квитирования аварии*)
+	AlarmActivationDelay: 		TIME; 			(*Задержка на срабатывание аварии*)
+END_VAR
+VAR_OUTPUT
+	isActive: BOOL; 		(*Аварийая блокировка активна*)
+	WasQuited: BOOL;		(*Авария была квитирована*)
+END_VAR
+VAR
+	tDelay : TON;
+	TempAlarmRec: ST_AlarmRecord;
+	AlarmNum: INT; 			(*Порядковый номер аварии*)
+	AlarmInfo: ST_AlarmInfo; 
+	iState: INT;(*Состояние аварии*)
+	i: INT;
+	n: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF AlarmCheckIsEnable THEN 
+	CASE  AlarmType OF
+		00:
+			a1_Local_Quit();
+		01:
+			a2_Alarm_ScadaQuit();
+		02:
+			a3_Alarm_NoQuit();
+		03:
+			a4_Warning_RecordOnly();
+	END_CASE
+END_IF]]></ST>
+    </Implementation>
+    <Action Name="a1_Local_Quit" Id="{63db822d-757d-41d1-a186-386720b24979}">
+      <Implementation>
+        <ST><![CDATA[(*Обработчик Аварии, которую необходимо квитировать. Только локально.*)
+TempAlarmRec.wasQuited:=WasQuited;
+TempAlarmRec.isActive:=isActive;
+
+CASE iState OF
+	0:(*Инициализация*)
+		isActive:=FALSE;
+		WasQuited:=FALSE;
+		TempAlarmRec.wasQuited:=FALSE;
+		TempAlarmRec.Time_Quit:="Не квитирована";
+		TempAlarmRec.AlarmID:=AlarmInfo.AlarmID;
+		TempAlarmRec.Color:=AlarmInfo.Color;
+		TempAlarmRec.Description:=AlarmInfo.Description;
+		TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
+ 		iState:=10;
+
+	10:(*Авария не активна. Ожидание активации аварии*)
+		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
+			
+		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			tDelay(IN:=FALSE);
+			iState:=20;
+		END_IF
+
+		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			tDelay(IN:=FALSE);
+			iState:=30;
+		END_IF
+		
+	20: (*Запись Времени Аварии*)
+		TempAlarmRec.Time_On:=LibAlarm.Global_TimeStr;
+		isActive:=TRUE;
+		iState:= 30;
+		
+	30: (*Ожидание квитирования аварии и ее ухода*)
+		IF (LibAlarm.bLocalQuitAllAlarms OR bQuitAlarm) THEN 
+			TempAlarmRec.Time_Quit:=LibAlarm.Global_TimeStr;
+			WasQuited:=TRUE;
+			iState:=40;
+		END_IF
+
+		IF NOT AlarmEvent THEN
+			IF NOT WasQuited THEN
+				TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+				iState:=31;
+			END_IF;
+		END_IF
+	31:(*Авария ушла но не квитирована*)
+			IF (LibAlarm.bLocalQuitAllAlarms OR bQuitAlarm) THEN
+				TempAlarmRec.Time_Quit:=LibAlarm.Global_TimeStr;
+				WasQuited:=TRUE;
+
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+				iState:=00;
+			END_IF
+		
+		IF AlarmEvent THEN //авария пришла снова
+			TempAlarmRec.Time_Quit:="Не квитирована";
+
+			FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+				n:=LibAlarm.MAX_HISTORY_NUM-i;
+				LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+			END_FOR;
+		
+			LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+			
+			iState:=10;
+		END_IF
+		
+		40:(*Авария ушла и квитирована*)
+			IF NOT AlarmEvent THEN
+			TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+		
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+
+				iState:=0;
+			END_IF
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="a2_Alarm_ScadaQuit" Id="{b1187035-1c17-4f98-b40e-69d35d0a67ff}">
+      <Implementation>
+        <ST><![CDATA[(*Обработчик Аварии, которую необходимо квитировать. Локально и удаленно.*)
+TempAlarmRec.wasQuited:=WasQuited;
+TempAlarmRec.isActive:=isActive;
+
+CASE iState OF
+	0:(*Инициализация*)
+		isActive:=FALSE;
+		WasQuited:=FALSE;
+		TempAlarmRec.Time_Quit:="Не квитирована";
+		TempAlarmRec.AlarmID:=AlarmInfo.AlarmID;
+		TempAlarmRec.Color:=AlarmInfo.Color;
+		TempAlarmRec.Description:=AlarmInfo.Description;
+		TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
+ 		iState:=10;
+
+	10:(*Авария не активна. Ожидание активации аварии*)
+		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
+			
+		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			tDelay(IN:=FALSE);
+			iState:=20;
+		END_IF
+
+		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			tDelay(IN:=FALSE);
+			iState:=30;
+		END_IF
+		
+	20: (*Запись Времени Аварии*)
+		TempAlarmRec.Time_On:=LibAlarm.Global_TimeStr;
+		isActive:=TRUE;
+		iState:= 30;
+		
+	30: (*Ожидание квитирования аварии и ее ухода*)
+		IF (LibAlarm.bLocalQuitAllAlarms OR bQuitAlarm OR LibAlarm.bRemoteQuitAllAlarms) THEN 
+			TempAlarmRec.Time_Quit:=LibAlarm.Global_TimeStr;
+			WasQuited:=TRUE;
+			iState:=40;
+		END_IF
+
+		IF NOT AlarmEvent THEN
+			IF NOT WasQuited THEN
+				TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+				iState:=31;
+			END_IF;
+		END_IF
+	31:(*Авария ушла но не квитирована*)
+			IF (LibAlarm.bLocalQuitAllAlarms OR bQuitAlarm OR LibAlarm.bRemoteQuitAllAlarms) THEN
+				TempAlarmRec.Time_Quit:=LibAlarm.Global_TimeStr;
+				WasQuited:=TRUE;
+
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+				iState:=00;
+			END_IF
+
+		IF AlarmEvent THEN
+			TempAlarmRec.Time_Quit:="Не квитирована";
+
+			FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+				n:=LibAlarm.MAX_HISTORY_NUM-i;
+				LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+			END_FOR;
+		
+			LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+			
+			iState:=10;
+		END_IF
+		
+		40:(*Авария ушла и квитирована*)
+			IF NOT AlarmEvent THEN
+			TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+		
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+
+				iState:=0;
+			END_IF
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="a3_Alarm_NoQuit" Id="{9e00bcd7-b8a4-429b-b0aa-2b69a42f477c}">
+      <Implementation>
+        <ST><![CDATA[(*Обработчик Аварии, которую необходимо квитировать*)
+TempAlarmRec.wasQuited:=WasQuited;
+TempAlarmRec.isActive:=isActive;
+
+CASE iState OF
+	0:(*Инициализация*)
+		isActive:=FALSE;
+		WasQuited:=FALSE;
+		TempAlarmRec.Time_Quit:="Не квитирована";
+		TempAlarmRec.AlarmID:=AlarmInfo.AlarmID;
+		TempAlarmRec.Color:=AlarmInfo.Color;
+		TempAlarmRec.Description:=AlarmInfo.Description;
+		TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
+ 		iState:=10;
+
+	10:(*Авария не активна. Ожидание активации аварии*)
+		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
+			
+		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			tDelay(IN:=FALSE);
+			iState:=20;
+		END_IF
+
+		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			tDelay(IN:=FALSE);
+			iState:=30;
+		END_IF
+		
+	20: (*Запись Времени Аварии*)
+		TempAlarmRec.Time_On:=LibAlarm.Global_TimeStr;
+		isActive:=TRUE;
+		iState:= 30;
+		
+	30: (*Ожидание квитирования аварии и ее ухода*)
+		IF (LibAlarm.bLocalQuitAllAlarms OR bQuitAlarm OR LibAlarm.bRemoteQuitAllAlarms) THEN 
+			TempAlarmRec.Time_Quit:=LibAlarm.Global_TimeStr;
+			WasQuited:=TRUE;
+			iState:=40;
+		END_IF
+
+		IF NOT AlarmEvent THEN
+			IF NOT WasQuited THEN
+				TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+				iState:=40;
+			END_IF;
+		END_IF
+		
+		40:(*Авария ушла и квитирована*)
+			IF NOT AlarmEvent THEN
+			TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+		
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+
+				iState:=0;
+			END_IF
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="a4_Warning_RecordOnly" Id="{c1e311af-8afc-43bc-8c63-a7e2e0019169}">
+      <Implementation>
+        <ST><![CDATA[(*Предупреждение*)
+CASE iState OF
+	0:(*Инициализация*)
+		isActive:=FALSE;
+		WasQuited:=FALSE;
+		TempAlarmRec.Time_Quit:="Не квитирована";
+		TempAlarmRec.AlarmID:=AlarmInfo.AlarmID;
+		TempAlarmRec.Color:=AlarmInfo.Color;
+		TempAlarmRec.Description:=AlarmInfo.Description;
+		TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
+ 		iState:=10;
+
+	10:(*Авария не активна. Ожидание активации аварии*)
+		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
+			
+		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			tDelay(IN:=FALSE);
+			
+			TempAlarmRec.Time_ON:=LibAlarm.Global_TimeStr;
+			TempAlarmRec.Time_Quit:="Не квитирована";
+			TempAlarmRec.Time_OFF:=LibAlarm.Global_TimeStr;
+			
+				FOR i:=0 TO (LibAlarm.MAX_HISTORY_NUM - 2) DO
+					n:=LibAlarm.MAX_HISTORY_NUM-i;
+					LibAlarm.HistoryAlarmsArray[n]:=LibAlarm.HistoryAlarmsArray[n-1];
+				END_FOR;
+		
+				LibAlarm.HistoryAlarmsArray[1]:=TempAlarmRec;
+				
+			iState:=20;
+		END_IF
+
+		
+	20: (*Запись Времени Аварии*)
+		IF NOT AlarmEvent THEN
+			iState:=00;
+		END_IF
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="FB_init" Id="{85054220-a632-4910-bba1-a4c748b42899}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[libAlarm.iNumberOfAlarms:=libAlarm.iNumberOfAlarms+1;
+AlarmNum:=libAlarm.iNumberOfAlarms;
+LibAlarm.FB_Alarm_Iterator[AlarmNum]:=THIS;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Alarm">
+      <LineId Id="9" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="67" Count="4" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="139" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Alarm.a1_Local_Quit">
+      <LineId Id="96" Count="0" />
+      <LineId Id="318" Count="0" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="108" Count="1" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="303" Count="1" />
+      <LineId Id="302" Count="0" />
+      <LineId Id="310" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="113" Count="2" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="118" Count="1" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="124" Count="3" />
+      <LineId Id="142" Count="11" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="246" Count="2" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="253" Count="10" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="277" Count="4" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="274" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="283" Count="1" />
+      <LineId Id="288" Count="1" />
+      <LineId Id="293" Count="0" />
+      <LineId Id="305" Count="4" />
+      <LineId Id="299" Count="2" />
+      <LineId Id="287" Count="0" />
+      <LineId Id="285" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Alarm.a2_Alarm_ScadaQuit">
+      <LineId Id="3" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="4" Count="83" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Alarm.a3_Alarm_NoQuit">
+      <LineId Id="3" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="4" Count="41" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="73" Count="14" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Alarm.a4_Warning_RecordOnly">
+      <LineId Id="86" Count="0" />
+      <LineId Id="2" Count="15" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="93" Count="4" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="24" Count="2" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="100" Count="1" />
+      <LineId Id="84" Count="1" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Alarm.FB_init">
+      <LineId Id="16" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

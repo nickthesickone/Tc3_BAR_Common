@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="ST_AlarmRecord" Id="{200ff075-b544-487b-88d8-d85f10949465}">
+    <Declaration><![CDATA[(*Структура записи в журнале аварий*)
+TYPE ST_AlarmRecord EXTENDS ST_AlarmInfo :
+STRUCT
+	Time_On: 	WSTRING(15):="Нет данных"; 	(*Время возникновения аварии*)
+	Time_Off: 	WSTRING(15):="Нет данных";	(*Время ухода аварии*)
+	Time_Quit:	WSTRING(15):="Нет данных";	(*Время квитирования аварии*)
+	isActive: BOOL;							(*Блокировка активна в настоящий момент*)
+	wasQuited: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="AlarmSample" Id="{4ba2ba1f-c8f7-4c13-96f9-94d99d7108f6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM AlarmSample
+VAR
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[PRG_Alarms_Core();]]></ST>
+    </Implementation>
+    <LineIds Name="AlarmSample">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

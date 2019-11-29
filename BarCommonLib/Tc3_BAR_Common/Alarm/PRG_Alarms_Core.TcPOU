@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="PRG_Alarms_Core" Id="{59557512-efbf-419b-aff6-cb3ca81996e0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Alarms_Core
+VAR CONSTANT
+	CurrentAlarmsDisplayNum: UINT:=10;//Количество отображаемых на экране текущих аварий
+	HistoryAlarmsDisplayNum: UINT:=10;//Количество отображаемых на экране текущих аварий
+END_VAR
+VAR
+	iFB: UINT; (*Итератор Функциональных блоков*)
+	iCA: UINT; (*Итератор текущих аварий*)
+	{region "Current_Alarms_HMI"}
+	HMI_ActiveAlarms: ARRAY [1..CurrentAlarmsDisplayNum] OF ST_AlarmRecord;(*Масив с текущими отображаемыми авариями*)
+	HMI_NumsAA : ARRAY[1..CurrentAlarmsDisplayNum] OF UINT;	(*Индексы в массиве текущих аварий*)
+	iActiveAlarmsNumber: UINT;
+	HMI_CurListAA: UINT;
+	HMI_CurShiftAA: UINT;
+	iHMI_AA: UINT;
+	{endregion}
+	
+	{region "History_Alarms_HMI"}
+	HMI_HistoryAlarms: ARRAY [1..HistoryAlarmsDisplayNum] OF ST_AlarmRecord;(*Масив с *)
+	HMI_NumsHY : ARRAY[1..HistoryAlarmsDisplayNum] OF UINT;	(*Индексы в массиве истории аварий*)
+	HMI_CurListHY: UINT;
+	HMI_CurShiftHY: UINT;
+	iHMI_HY: UINT;
+	{endregion}
+		 
+	DefaultRec: ST_AlarmRecord;
+	{region "Мыргалка"}
+	t1: TON:=(PT:=T#1S);
+	{endregion}
+	
+	{region "Get_Current_Time"}
+	//Обновление строки текущего времени
+	NT_GetTime: NT_GetTime;
+	tonGetTime: TON:=(PT:=T#500MS);
+	{endregion}
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Get_Current_Time();
+
+Blink();
+
+FB_Alarm_Execution();
+
+Current_Alarms_HMI();
+
+History_Alarms_HMI();]]></ST>
+    </Implementation>
+    <Action Name="Blink" Id="{ee8e8252-6d7a-406c-a6d9-79c114c13035}">
+      <Implementation>
+        <ST><![CDATA[t1(in:=NOT t1.q);
+
+IF t1.q THEN
+LibAlarm.Blink:=NOT LibAlarm.Blink;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Current_Alarms_HMI" Id="{773ffe20-08a4-4e0c-b2c7-2dfe8f19fba4}">
+      <Implementation>
+        <ST><![CDATA[	IF (HMI_CurShiftAA > LibAlarm.iNumberOfAlarms) THEN
+		HMI_CurShiftAA:=LibAlarm.iNumberOfAlarms;
+	ELSIF (HMI_CurShiftAA < 0 ) THEN
+		HMI_CurShiftAA:=0;
+	END_IF
+	
+	HMI_CurListAA := HMI_CurShiftAA / CurrentAlarmsDisplayNum;
+	
+	FOR iHMI_AA:=1 TO CurrentAlarmsDisplayNum DO
+		HMI_NumsAA[iHMI_AA]:=iHMI_AA+HMI_CurShiftAA;
+		HMI_ActiveAlarms[iHMI_AA]:=LibAlarm.ActiveAlarmsArray[HMI_NumsAA[iHMI_AA]];
+	END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FB_Alarm_Execution" Id="{da493edf-c85c-428c-a863-bb5ad3cea3cc}">
+      <Implementation>
+        <ST><![CDATA[iCA:=1;
+FOR iFB:=1 TO LibAlarm.iNumberOfAlarms DO
+		LibAlarm.FB_Alarm_Iterator[iFB]^();
+		LibAlarm.ActiveAlarmsArray[iFB]:=DefaultRec;
+		IF LibAlarm.FB_Alarm_Iterator[iFB]^.isActive THEN
+			LibAlarm.ActiveAlarmsArray[iCA]:=LibAlarm.FB_Alarm_Iterator[iFB]^.TempAlarmRec;
+			iCA:=iCA+1;
+		END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Get_Current_Time" Id="{242882cc-372b-4c26-8614-fdbc5624a0cf}">
+      <Implementation>
+        <ST><![CDATA[(*Получение текущего времени*)
+tonGetTime(IN:= NOT tonGetTime.Q);
+NT_GetTime(START:=tonGetTime.Q );
+IF tonGetTime.Q THEN
+	LibAlarm.Global_TimeStr := TS_to_WSTRING(NT_GetTime.TIMESTR);
+END_IF
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="History_Alarms_HMI" Id="{240ea900-4b3e-4edd-a878-2764de669a8f}">
+      <Implementation>
+        <ST><![CDATA[	IF (HMI_CurShiftHY > (LibAlarm.MAX_HISTORY_NUM - HistoryAlarmsDisplayNum)) THEN
+		HMI_CurShiftHY:=LibAlarm.MAX_HISTORY_NUM - HistoryAlarmsDisplayNum;
+	ELSIF (HMI_CurShiftHY < 0 ) THEN
+		HMI_CurShiftHY:=0;
+	END_IF
+	
+	HMI_CurListHY := HMI_CurShiftHY / HistoryAlarmsDisplayNum;
+	
+	FOR iHMI_HY:=1 TO HistoryAlarmsDisplayNum DO
+		HMI_NumsHY[iHMI_HY]:=iHMI_HY+HMI_CurShiftHY;
+		HMI_HistoryAlarms[iHMI_HY]:=LibAlarm.HistoryAlarmsArray[HMI_NumsHY[iHMI_HY]];
+	END_FOR ]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="PRG_Alarms_Core">
+      <LineId Id="18" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="94" Count="0" />
+    </LineIds>
+    <LineIds Name="PRG_Alarms_Core.Blink">
+      <LineId Id="2" Count="3" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PRG_Alarms_Core.Current_Alarms_HMI">
+      <LineId Id="19" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="11" Count="3" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="16" Count="0" />
+    </LineIds>
+    <LineIds Name="PRG_Alarms_Core.FB_Alarm_Execution">
+      <LineId Id="9" Count="0" />
+      <LineId Id="2" Count="1" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="4" Count="1" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="PRG_Alarms_Core.Get_Current_Time">
+      <LineId Id="2" Count="5" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PRG_Alarms_Core.History_Alarms_HMI">
+      <LineId Id="3" Count="11" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

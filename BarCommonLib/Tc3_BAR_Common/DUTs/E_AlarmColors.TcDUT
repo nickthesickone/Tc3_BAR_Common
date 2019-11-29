@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="E_AlarmColors" Id="{a452f184-6196-4705-baec-f955d7b443d6}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_AlarmColors :
+(
+	E_Gray 		:= 16#7FD0D0D0, // Серый цвет
+	E_Red  		:= 16#7FFF3C3C, // Красный цвет
+	E_Yellow	:= 16#7FFFFF7D, // Желтый цвет
+	E_green 	:= 16#7F00FF40, // Зеленый цвет
+	E_Blue 		:= 16#7F8080FF  // Синий цвет
+) DWORD;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.10">
+  <POU Name="TS_to_WSTRING" Id="{b6054169-6ca7-4404-91c4-758061a6a8e6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION TS_to_WSTRING : WSTRING(20)
+VAR_INPUT
+	in:TIMESTRUCT;
+END_VAR
+VAR
+	str: WSTRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF in.wHour>=10 THEN
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wHour));
+ELSE
+str:=WCONCAT (str, "0");
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wHour));
+END_IF
+
+str:=WCONCAT (str, ":");
+
+IF in.wMinute>=10 THEN
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wMinute));
+ELSE
+str:=WCONCAT (str, "0");
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wMinute));
+END_IF
+
+str:=WCONCAT (str, ":");
+
+IF in.wSecond>=10 THEN
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wSecond));
+ELSE
+str:=WCONCAT (str, "0");
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wSecond));
+END_IF
+
+str:=WCONCAT (str, " ");
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wDay));
+
+IF in.wMonth <10 THEN
+	str:=WCONCAT (str, ".0");
+	str:=WCONCAT (str, WORD_TO_WSTRING(in.wMonth));	
+ELSE
+	str:=WCONCAT (str, ".");
+	str:=WCONCAT (str, WORD_TO_WSTRING(in.wMonth));
+END_IF
+
+str:=WCONCAT (str, ".");
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wYear));
+TS_to_WSTRING:=str;]]></ST>
+    </Implementation>
+    <LineIds Name="TS_to_WSTRING">
+      <LineId Id="15" Count="26" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="43" Count="2" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="LibAlarm" Id="{82dacfb4-735e-4b9e-ba76-c8100c0847b1}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	MAX_ALARMS_NUM : UINT:=1000; (*Максимальное число аварий в программе*)
+	MAX_HISTORY_NUM: UINT:=1000; (*Глубина Аварийного журнала*)
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+	HistoryAlarmsArray: ARRAY [1..MAX_ALARMS_NUM] OF ST_AlarmRecord; (*Массив с историей аварий*)
+END_VAR
+
+VAR_GLOBAL
+	Blink: BOOL; // Мыргалка
+	
+	iNumberOfAlarms: UINT; 													//Количество экземпляров FB_Alarms
+	FB_Alarm_Iterator: 	ARRAY [1..MAX_ALARMS_NUM] OF POINTER TO FB_alarm; 	//Итератор экземпляров FB_Alarm для исполнения
+	ActiveAlarmsArray: 	ARRAY [1..MAX_ALARMS_NUM] OF ST_AlarmRecord; 		//Массив с текущими авариями
+	
+	Global_TimeStr: 		WSTRING(20);//	Метка текущего времени
+	bRemoteQuitAllAlarms: 	BOOL;	 	// 	Переменная для удаленного квитирования аварии
+	bLocalQuitAllAlarms AT %I*: BOOL;	//	Переменная для локального квитирования аварии
+	bAlarmButtonBlink: 		BOOL;	 	// 	В настоящий момент есть активные не квитированные аварии требующие сброса
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

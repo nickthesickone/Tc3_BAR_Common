@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.10">
+  <POU Name="FB_AnalogChannel" Id="{a14b36c6-a885-40ed-8642-1cec0125622c}" SpecialFunc="None">
+    <Declaration><![CDATA[{region КОМЕНТЫ}
+(**)
+
+{endregion}
+FUNCTION_BLOCK FINAL FB_AnalogChannel
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	Underrange: BOOL; (*Недогрузка модульного канала*)
+	Overrange: BOOL; (*Перегрузка модульного канала*)
+	Error: BOOL; (*Ошибка модульного канала*)
+END_VAR
+VAR
+	eTermType :E_TermType; (*Тип терминала ввода / вывода*)
+	LowBound : LREAL; (*Нижняя граница диапазона изменения значений*)
+	HighBound : LREAL:=100; (*Верхняя граница диапазона изменения значений*)
+	Shift : LREAL; (*Значение сдвига диапазона изменения значений*)
+	Value: LREAL; (*Текущее показание отмасштабированного канала*)
+	
+END_VAR
+VAR_IN_OUT
+	TerminalChannel : TermChannel; (*Ссылка на линкованный канал модуля*)
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	CASE eTermType OF
+		E_TermType.EL320x:
+		
+			Value:=Value*0.1+Shift;
+			
+		E_TermType.EL306x:
+			(*                  		  HighBound - LowBound                               *)
+			(*  Value =lowbound +  ---------------------------------   x  ADC_Value + Shift;   *)
+			(* 									32767   									  *)
+			Value:= LowBound + ((HighBound - LowBound) * TerminalChannel.Value)/32676 + Shift;
+			
+		E_TermType.EL305x:
+			(*                  		  HighBound - LowBound                               *)
+			(*  Value =lowbound +  ---------------------------------   x  ADC_Value + Shift;   *)
+			(* 									32767   									  *)
+			Value:= LowBound + ((HighBound - LowBound) * TerminalChannel.Value)/32676 + Shift;
+		
+		E_TermType.EL400x:
+			(*                           (Value-Lower_bound-Shift)*32767   		*)
+			(*              ADC_Value = ------------------------------------    *)
+			(*                              upper_bound-lower_bound          	*)
+			TerminalChannel.Value:= LREAL_TO_INT( ((Value - LowBound - Shift)*32767)/(HighBound - LowBound));
+			
+		E_TermType.EL401x:
+			(*                           (Value-Lower_bound-Shift)*32767   		*)
+			(*              ADC_Value = ------------------------------------    *)
+			(*                              upper_bound-lower_bound          	*)
+			TerminalChannel.Value:= LREAL_TO_INT( ((Value - LowBound - Shift)*32767)/(HighBound - LowBound));
+			
+		E_TermType.EL401x_4_20:
+			(*                (Value-Lower_bound-Shift)*(32767-6553) 	        *)
+			(*  ADC_Value = ----------------------------------------  + 6553    *)
+			(*                    upper_bound-lower_bound          	            *)
+			TerminalChannel.Value:= LREAL_TO_INT( ((Value - LowBound - Shift)*(32767 -6553))/(HighBound - LowBound))+ 6553;	
+	END_CASE
+	
+	Underrange:=TerminalChannel.Status.0;
+	Overrange:=TerminalChannel.Status.1;
+	Error:=TerminalChannel.Status.6;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AnalogChannel">
+      <LineId Id="52" Count="37" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

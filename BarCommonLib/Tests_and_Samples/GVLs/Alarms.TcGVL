@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="Alarms" Id="{48e36b9a-259c-4d5f-a2ca-0a45741d6a05}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	SeriosAlarm: FB_Alarm := (AlarmInfo := (AlarmID := "LC224", Color := E_ALarmColors.E_Red, Description := "Серьезная тестовая авария", PossibleCause := "Оператор"));
+	NotSeriosAlarm: FB_Alarm := (AlarmType := ALARMTYPE.Alarm_NoQuit, AlarmInfo := (AlarmID := "NQ105", Color := E_ALarmColors.E_Yellow, Description := "Ошибка, которую не нужно квитировать", PossibleCause := "Оператор"));
+	SimpleWarning: FB_Alarm := (AlarmType := ALARMTYPE.Alarm_NoQuit, AlarmInfo := (AlarmID := "Предупреждение", Color := E_ALarmColors.E_Green, Description := "Событие для записи в журнал", PossibleCause := "Оператор"));
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

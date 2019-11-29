@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="ST_AlarmInfo" Id="{090a0809-8e74-464f-86d2-ee2cef718f4b}">
+    <Declaration><![CDATA[(*Структура описания аварии*)
+TYPE ST_AlarmInfo :
+STRUCT
+	AlarmID: WSTRING(5);				(*Текстовый идентификатор аварии*)
+	Color: E_ALarmColors:=E_ALarmColors.E_Gray;		(*Цвет аварии. Заваисит от типа аварии*)
+	Description: WSTRING(80):="--------------------------------------------------"; (*Поле описание аварии*)
+	PossibleCause: WSTRING; 			(*Поле возможной причины аварии или указаний на аварийный узел*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
