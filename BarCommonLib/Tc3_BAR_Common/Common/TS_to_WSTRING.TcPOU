@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.10">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
   <POU Name="TS_to_WSTRING" Id="{b6054169-6ca7-4404-91c4-758061a6a8e6}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION TS_to_WSTRING : WSTRING(20)
 VAR_INPUT
@@ -46,7 +46,7 @@ ELSE
 END_IF
 
 str:=WCONCAT (str, ".");
-str:=WCONCAT (str, WORD_TO_WSTRING(in.wYear));
+str:=WCONCAT (str, WORD_TO_WSTRING(in.wYear-2000));
 TS_to_WSTRING:=str;]]></ST>
     </Implementation>
     <LineIds Name="TS_to_WSTRING">

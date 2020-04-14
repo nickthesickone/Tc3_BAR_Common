@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
   <POU Name="FB_Alarm" Id="{969aa0c0-5b48-4116-b2b9-42f210740f10}" SpecialFunc="None">
     <Declaration><![CDATA[{region "Documentation"}
 (*
@@ -49,6 +49,7 @@ VAR_INPUT
 	AlarmEvent: 				BOOL:=FALSE; 	(*Условие срабатывания аварии*)
 	bQuitAlarm:    				BOOL:=FALSE;	(*Команда на квитирование аварии, 1-квитирование*)
 	AlarmType: 					AlarmType; 		(*Тип квитирования аварии*)
+	AlarmInfo: ST_AlarmInfo; 
 	AlarmActivationDelay: 		TIME; 			(*Задержка на срабатывание аварии*)
 END_VAR
 VAR_OUTPUT
@@ -59,7 +60,6 @@ VAR
 	tDelay : TON;
 	TempAlarmRec: ST_AlarmRecord;
 	AlarmNum: INT; 			(*Порядковый номер аварии*)
-	AlarmInfo: ST_AlarmInfo; 
 	iState: INT;(*Состояние аварии*)
 	i: INT;
 	n: INT;

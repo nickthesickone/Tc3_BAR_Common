@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
   <GlobalTextList Name="GlobalTextList" Id="{7dfd0b58-6036-411d-afe4-3dd107db1fc4}">
     <XmlArchive>
       <Data>
@@ -16,8 +16,18 @@
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"761"</v>
+              <v n="TextDefault">" Журнал аварий"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"590"</v>
               <v n="TextDefault">" КВ: %s"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"85"</v>
+              <v n="TextDefault">" Список текущих аварий"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
@@ -203,6 +213,26 @@
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"698"</v>
+              <v n="TextDefault">"возникновения:"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"20"</v>
+              <v n="TextDefault">"Время"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"880"</v>
+              <v n="TextDefault">"Время возникновения"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"147"</v>
+              <v n="TextDefault">"Время квитирования"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"641"</v>
               <v n="TextDefault">"до %s"</v>
               <l n="LanguageTexts" t="ArrayList" />
@@ -223,13 +253,33 @@
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"814"</v>
+              <v n="TextDefault">"закрыть окно"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"214"</v>
+              <v n="TextDefault">"Источник"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"395"</v>
               <v n="TextDefault">"КВ: %s"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"264"</v>
+              <v n="TextDefault">"квитирования:"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"811"</v>
               <v n="TextDefault">"Квитировать все аварии"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"374"</v>
+              <v n="TextDefault">"Код"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
@@ -245,6 +295,11 @@
             <o>
               <v n="TextID">"832"</v>
               <v n="TextDefault">"Нет текущих аварий"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"879"</v>
+              <v n="TextDefault">"Описание события"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
@@ -280,6 +335,12 @@
             <o>
               <v n="TextID">"937"</v>
               <v n="TextDefault">"№ %d"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"310"</v>
+              <v n="TextDefault">"№ п/п
+Код"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>

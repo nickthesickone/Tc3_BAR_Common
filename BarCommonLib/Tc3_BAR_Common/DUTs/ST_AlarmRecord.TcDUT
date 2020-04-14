@@ -4,9 +4,9 @@
     <Declaration><![CDATA[(*Структура записи в журнале аварий*)
 TYPE ST_AlarmRecord EXTENDS ST_AlarmInfo :
 STRUCT
-	Time_On: 	WSTRING(15):="Нет данных"; 	(*Время возникновения аварии*)
-	Time_Off: 	WSTRING(15):="Нет данных";	(*Время ухода аварии*)
-	Time_Quit:	WSTRING(15):="Нет данных";	(*Время квитирования аварии*)
+	Time_On: 	WSTRING(20):="Нет данных"; 	(*Время возникновения аварии*)
+	Time_Off: 	WSTRING(20):="Нет данных";	(*Время ухода аварии*)
+	Time_Quit:	WSTRING(20):="Нет данных";	(*Время квитирования аварии*)
 	isActive: BOOL;							(*Блокировка активна в настоящий момент*)
 	wasQuited: BOOL;
 END_STRUCT

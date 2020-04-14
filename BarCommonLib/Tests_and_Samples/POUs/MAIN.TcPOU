@@ -3,6 +3,7 @@
   <POU Name="MAIN" Id="{4c756481-7ec3-4e41-a368-ed1e2246c441}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
+	bBrowserStart: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
