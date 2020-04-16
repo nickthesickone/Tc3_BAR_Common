@@ -101,11 +101,13 @@ CASE iState OF
 		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
 			
 		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=20;
 		END_IF
 
 		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=30;
 		END_IF
@@ -194,11 +196,13 @@ CASE iState OF
 		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
 			
 		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=20;
 		END_IF
 
 		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=30;
 		END_IF
@@ -287,11 +291,13 @@ CASE iState OF
 		tDelay(IN:=AlarmEvent, PT:=AlarmActivationDelay);
 			
 		IF tDelay.Q THEN (*Возникновение первой аварии*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=20;
 		END_IF
 
 		IF isActive THEN (*Авария не была квитирована и возникла еще раз*)
+			TempAlarmRec.PossibleCause:=AlarmInfo.PossibleCause;
 			tDelay(IN:=FALSE);
 			iState:=30;
 		END_IF
@@ -421,9 +427,11 @@ LibAlarm.FB_Alarm_Iterator[AlarmNum]:=THIS;
       <LineId Id="111" Count="0" />
       <LineId Id="121" Count="0" />
       <LineId Id="120" Count="0" />
+      <LineId Id="321" Count="0" />
       <LineId Id="112" Count="0" />
       <LineId Id="122" Count="0" />
       <LineId Id="113" Count="2" />
+      <LineId Id="320" Count="0" />
       <LineId Id="123" Count="0" />
       <LineId Id="116" Count="0" />
       <LineId Id="103" Count="0" />
@@ -456,7 +464,11 @@ LibAlarm.FB_Alarm_Iterator[AlarmNum]:=THIS;
       <LineId Id="91" Count="0" />
       <LineId Id="90" Count="0" />
       <LineId Id="92" Count="0" />
-      <LineId Id="4" Count="83" />
+      <LineId Id="4" Count="14" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="19" Count="4" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="24" Count="63" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="FB_Alarm.a3_Alarm_NoQuit">
@@ -464,7 +476,11 @@ LibAlarm.FB_Alarm_Iterator[AlarmNum]:=THIS;
       <LineId Id="92" Count="0" />
       <LineId Id="91" Count="0" />
       <LineId Id="90" Count="0" />
-      <LineId Id="4" Count="41" />
+      <LineId Id="4" Count="14" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="19" Count="4" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="24" Count="21" />
       <LineId Id="88" Count="0" />
       <LineId Id="73" Count="14" />
       <LineId Id="1" Count="0" />
