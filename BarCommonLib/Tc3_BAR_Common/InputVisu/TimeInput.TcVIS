@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
   <Visu Name="TimeInput" Id="{0be2a367-d3c2-4cd8-8347-ddd700e41329}">
     <XmlArchive>
       <Data>
         <o xml:space="preserve" t="VisualObject">
           <n n="LastVisuLanguageModelEntry" />
-          <v n="UniqueIdGenerator">"15"</v>
+          <v n="UniqueIdGenerator">"36"</v>
           <o n="VisualElemList" t="VisualElemList">
             <l n="VisualElementList" t="VisualElemCollection" cet="GenericVisualElem">
               <o>
@@ -511,7 +511,7 @@
                       <n n="Dialog" />
                       <v n="Dialog33">"TimeInput"</v>
                       <v n="Result">"Yes"</v>
-                      <v n="NumpadKeypad">false</v>
+                      <v n="NumpadKeypad">true</v>
                       <v n="NumpadKeypadSet">true</v>
                     </o>
                   </a>
@@ -4339,8 +4339,8 @@ END_IF"</v>
                 <v>d0e76b43-988e-4d37-b002-0353f400a0bf</v>
                 <v>HasInputAccess</v>
                 <v>61aaca5a-786d-4fb8-86ab-184a8a544d60</v>
-                <v>Update</v>
-                <v>5413d347-dcdd-471f-ad00-8d8cece674e2</v>
+                <v>HasInputAccessIntern</v>
+                <v>95173574-706e-4c1a-bbe1-9ef657eecaaa</v>
                 <v>GetTooltip</v>
                 <v>13755024-a996-4010-9f2b-80096eb2b7dc</v>
                 <v>GetDialogInterfaceSize</v>
@@ -4353,6 +4353,8 @@ END_IF"</v>
                 <v>07b834f3-d9dd-44cc-9b4f-57237c29b572</v>
                 <v>GetTranslator</v>
                 <v>468e183c-b45e-4597-b6f0-beddd18fb880</v>
+                <v>Update</v>
+                <v>5413d347-dcdd-471f-ad00-8d8cece674e2</v>
                 <v>SetClientData</v>
                 <v>0ca8f4d5-2e45-4ac1-a08f-43ae87776cc7</v>
                 <v>HasVisibilityAccessIntern</v>
@@ -4373,8 +4375,6 @@ END_IF"</v>
                 <v>61bec4b8-e53c-4c3f-b8a3-ada4ac11b879</v>
                 <v>IsAntialiasingInactive</v>
                 <v>3310d138-f2b4-4514-b6aa-e60d5934bb7c</v>
-                <v>HasInputAccessIntern</v>
-                <v>95173574-706e-4c1a-bbe1-9ef657eecaaa</v>
                 <v>Initialize</v>
                 <v>7ca3f540-86c0-4d3f-b588-71947a41f685</v>
                 <v>Destruct</v>
@@ -4475,19 +4475,29 @@ END_IF"</v>
                 <v n="Text">"VAR_INPUT"</v>
               </o>
               <o>
-                <v n="Id">6L</v>
+                <v n="Id">32L</v>
                 <n n="Tag" />
-                <v n="Text">"	Header: WSTRING;		// Название для загаловока окна "</v>
+                <v n="Text">"	stVariableValue : STRING;"</v>
               </o>
               <o>
-                <v n="Id">14L</v>
+                <v n="Id">33L</v>
                 <n n="Tag" />
-                <v n="Text">"	MinTime: TIME:=T#5S; 	// Минимальное значение переменной"</v>
+                <v n="Text">"	stMin : STRING;"</v>
               </o>
               <o>
-                <v n="Id">15L</v>
+                <v n="Id">34L</v>
                 <n n="Tag" />
-                <v n="Text">"	MaxTime: TIME:=T#31D; 	// Максимальное значение переменой"</v>
+                <v n="Text">"	stMax : STRING;"</v>
+              </o>
+              <o>
+                <v n="Id">35L</v>
+                <n n="Tag" />
+                <v n="Text">"	wstTitle : WSTRING;"</v>
+              </o>
+              <o>
+                <v n="Id">36L</v>
+                <n n="Tag" />
+                <v n="Text">"	flags : DWORD;"</v>
               </o>
               <o>
                 <v n="Id">7L</v>
@@ -4495,17 +4505,47 @@ END_IF"</v>
                 <v n="Text">"END_VAR"</v>
               </o>
               <o>
-                <v n="Id">2L</v>
+                <v n="Id">24L</v>
                 <n n="Tag" />
-                <v n="Text">"VAR_IN_OUT"</v>
+                <v n="Text">"VAR"</v>
               </o>
               <o>
-                <v n="Id">3L</v>
+                <v n="Id">25L</v>
                 <n n="Tag" />
-                <v n="Text">"	TimeVar: TIME;// Переменная для ввода"</v>
+                <v n="Text">"	bInit : BOOL;"</v>
               </o>
               <o>
-                <v n="Id">1L</v>
+                <v n="Id">26L</v>
+                <n n="Tag" />
+                <v n="Text">"	stMessage : STRING;"</v>
+              </o>
+              <o>
+                <v n="Id">27L</v>
+                <n n="Tag" />
+                <v n="Text">"	stOutputValue : STRING;"</v>
+              </o>
+              <o>
+                <v n="Id">28L</v>
+                <n n="Tag" />
+                <v n="Text">"	iCaretPosition	: INT;"</v>
+              </o>
+              <o>
+                <v n="Id">29L</v>
+                <n n="Tag" />
+                <v n="Text">"	iSelectionStart	: INT;"</v>
+              </o>
+              <o>
+                <v n="Id">30L</v>
+                <n n="Tag" />
+                <v n="Text">"	iSelectionEnd	: INT;"</v>
+              </o>
+              <o>
+                <v n="Id">31L</v>
+                <n n="Tag" />
+                <v n="Text">"	xAllSelected	: BOOL;"</v>
+              </o>
+              <o>
+                <v n="Id">16L</v>
                 <n n="Tag" />
                 <v n="Text">"END_VAR"</v>
               </o>
@@ -4535,6 +4575,21 @@ END_IF"</v>
                 <l2 n="AccessRights" />
               </o>
             </l2>
+          </o>
+          <o n="VisuSizeManager" t="VisualObjectSizeManager">
+            <d2 n="Size" ckt="Int32" cvt="VisualObjectSize">
+              <v>0</v>
+              <o>
+                <v n="Width">400</v>
+                <v n="Height">250</v>
+              </o>
+              <v>1</v>
+              <o>
+                <v n="Width">400</v>
+                <v n="Height">250</v>
+              </o>
+            </d2>
+            <v n="Version">1</v>
           </o>
         </o>
       </Data>
@@ -4576,13 +4631,15 @@ END_IF"</v>
         <Type n="VisualElemMemberCollection">{a4b83bea-3742-489c-9fe8-d96d68dba7ab}</Type>
         <Type n="VisualElemMemberList">{17e26cd1-bb9b-47fe-a3d5-18fcd63b9c96}</Type>
         <Type n="VisualObject">{f18bec89-9fef-401d-9953-2f11739a6808}</Type>
+        <Type n="VisualObjectSize">{6ad3e88f-aee2-4766-a7ea-a8790037ef51}</Type>
+        <Type n="VisualObjectSizeManager">{5f612b0e-b404-455f-8177-27864e9f5332}</Type>
       </TypeList>
     </XmlArchive>
     <ObjectProperties>
       <XmlArchive>
         <Data>
           <o xml:space="preserve" t="VisualProperty">
-            <v n="VisuUsageType">1</v>
+            <v n="VisuUsageType">2</v>
             <v n="SizeX">400</v>
             <v n="SizeY">250</v>
             <v n="IsStartVisu">false</v>
