@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
   <Visu Name="TimeInput" Id="{0be2a367-d3c2-4cd8-8347-ddd700e41329}">
     <XmlArchive>
       <Data>
@@ -328,7 +328,7 @@
                 <v n="VisualElementIdentifier">"CancelButton"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="InputCloseDialogAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
                   <v>OnMouseDown</v>
                   <a cet="InputCloseDialogAction">
                     <o>
@@ -504,7 +504,7 @@
                 <v n="VisualElementIdentifier">"GenElemInst_29"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="InputCloseDialogAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
                   <v>OnMouseUp</v>
                   <a cet="InputCloseDialogAction">
                     <o>
@@ -851,7 +851,7 @@
                 <v n="VisualElementIdentifier">"GenElemInst_41"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="STSnippetInputAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
                   <v>OnMouseUp</v>
                   <a cet="STSnippetInputAction">
                     <o>
@@ -4419,10 +4419,10 @@ END_IF"</v>
               <d n="FbMethods" t="CaseInsensitiveHashtable" ckt="String" cvt="Guid">
                 <v>FB_Init</v>
                 <v>02f99afb-9dcd-431b-896f-25e2ce582993</v>
-                <v>FB_Exit</v>
-                <v>08eee105-41df-44b1-80dc-18047b057e46</v>
                 <v>FB_Reinit</v>
                 <v>1b214bb2-1527-4c55-87bb-cef8b76bb0c6</v>
+                <v>FB_Exit</v>
+                <v>08eee105-41df-44b1-80dc-18047b057e46</v>
               </d>
               <v n="FbName">"NotImportant"</v>
               <v n="FbGuid">{807f1bea-b4ae-4cb7-80a8-f70ef7a1a8dd}</v>
@@ -4512,17 +4512,17 @@ END_IF"</v>
               <o>
                 <v n="Id">25L</v>
                 <n n="Tag" />
-                <v n="Text">"	bInit : BOOL;"</v>
+                <v n="Text">"	bInit 			: BOOL;"</v>
               </o>
               <o>
                 <v n="Id">26L</v>
                 <n n="Tag" />
-                <v n="Text">"	stMessage : STRING;"</v>
+                <v n="Text">"	stMessage 		: STRING;"</v>
               </o>
               <o>
                 <v n="Id">27L</v>
                 <n n="Tag" />
-                <v n="Text">"	stOutputValue : STRING;"</v>
+                <v n="Text">"	stOutputValue 	: STRING;"</v>
               </o>
               <o>
                 <v n="Id">28L</v>
@@ -4610,8 +4610,8 @@ END_IF"</v>
         <Type n="Hotkey">{af56537c-7297-47e7-9c1c-de502e9fb71c}</Type>
         <Type n="HotkeyConfiguration">{6b108d46-58af-4e41-a3f4-174d8f160cc4}</Type>
         <Type n="HotkeyInput">{b36c4830-66bb-4798-aa52-839aa91713f0}</Type>
+        <Type n="IInputAction[]">_3S.CoDeSys.VisualElem.IInputAction[], VisualElem, Version=3.5.13.0, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="InputCloseDialogAction">{5d84b30d-2b79-4065-9de4-596597fc09b4}</Type>
-        <Type n="InputCloseDialogAction[]">_3S.CoDeSys.VisualElem.InputCloseDialogAction[], VisualElem.plugin, Version=3.5.13.30, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="Int16">System.Int16</Type>
         <Type n="Int32">System.Int32</Type>
         <Type n="Int64">System.Int64</Type>

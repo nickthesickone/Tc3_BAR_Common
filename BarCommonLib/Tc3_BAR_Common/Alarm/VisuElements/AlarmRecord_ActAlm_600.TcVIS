@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
   <Visu Name="AlarmRecord_ActAlm_600" Id="{2f87d424-1a60-4edb-bc6e-8491a98e856e}">
     <XmlArchive>
       <Data>
@@ -1660,10 +1660,10 @@
               <d n="FbMethods" t="CaseInsensitiveHashtable_1" ckt="String" cvt="Guid">
                 <v>FB_Init</v>
                 <v>d9aa1d4b-6926-4407-9a11-d44880520060</v>
-                <v>FB_Reinit</v>
-                <v>40dc3cdc-d52a-43ab-882a-58f6bf6ba260</v>
                 <v>FB_Exit</v>
                 <v>2746a3c3-3dbe-4f05-834d-b881f0b06393</v>
+                <v>FB_Reinit</v>
+                <v>40dc3cdc-d52a-43ab-882a-58f6bf6ba260</v>
               </d>
               <v n="FbName">"NotImportant"</v>
               <v n="FbGuid">{74924dc8-bae2-493c-b681-a781552b4412}</v>
@@ -1707,7 +1707,7 @@
             </o>
             <v n="DialogDut">{e5a784fe-445d-45a8-92d9-62948a21d236}</v>
           </o>
-          <v n="LastUsedIdForIdentifier">60</v>
+          <v n="LastUsedIdForIdentifier">61</v>
           <o n="TextDocument" t="TextDocument">
             <a n="TextLines" cet="TextLine">
               <o>
@@ -1739,6 +1739,21 @@
             <v n="IdMask">549754765312L</v>
             <v n="IdStep">1048576L</v>
             <l2 n="Inputs" />
+          </o>
+          <o n="VisuSizeManager" t="VisualObjectSizeManager">
+            <d2 n="Size" ckt="Int32" cvt="VisualObjectSize">
+              <v>0</v>
+              <o>
+                <v n="Width">636</v>
+                <v n="Height">31</v>
+              </o>
+              <v>1</v>
+              <o>
+                <v n="Width">637</v>
+                <v n="Height">31</v>
+              </o>
+            </d2>
+            <v n="Version">0</v>
           </o>
         </o>
       </Data>
@@ -1780,7 +1795,31 @@
         <Type n="VisualElemMemberCollection">{a4b83bea-3742-489c-9fe8-d96d68dba7ab}</Type>
         <Type n="VisualElemMemberList">{17e26cd1-bb9b-47fe-a3d5-18fcd63b9c96}</Type>
         <Type n="VisualObject">{f18bec89-9fef-401d-9953-2f11739a6808}</Type>
+        <Type n="VisualObjectSize">{6ad3e88f-aee2-4766-a7ea-a8790037ef51}</Type>
+        <Type n="VisualObjectSizeManager">{5f612b0e-b404-455f-8177-27864e9f5332}</Type>
       </TypeList>
     </XmlArchive>
+    <ObjectProperties>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="VisualProperty">
+            <v n="VisuUsageType">0</v>
+            <v n="SizeX">1024</v>
+            <v n="SizeY">768</v>
+            <v n="IsStartVisu">false</v>
+            <v n="VisuSizeMode" t="VisualVisuSizeMode">AutoDetect</v>
+            <v n="Internal">true</v>
+            <v n="DialogIsOpaque">false</v>
+            <v n="DialogIsOpaqueIsSet">false</v>
+          </o>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="VisualProperty">{477d844b-9b2a-407e-90a4-d36fd6dde2fc}</Type>
+          <Type n="VisualVisuSizeMode">{34718b76-91f6-43de-8c65-b77e0b1ee621}</Type>
+        </TypeList>
+      </XmlArchive>
+    </ObjectProperties>
   </Visu>
 </TcPlcObject>
