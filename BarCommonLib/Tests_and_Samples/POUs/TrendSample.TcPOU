@@ -1,23 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
   <POU Name="TrendSample" Id="{cdd5624a-200a-452d-85d1-79574d4adaf6}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM TrendSample
 VAR
 	VariableForTrend: REAL;
 	t: REAL;
-	Var1: FB_TrandChanel := (MaximalValue := 1, pPoints := 100);
+	VariableTrend: FB_TrendChanel := (MinimalValue := -1, MaximalValue := 1);
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[t:=t+0.01;
 VariableForTrend:=SIN(t);
-Var1(TrendChannel:= VariableForTrend );
+VariableTrend(InputData:= VariableForTrend);
  ]]></ST>
     </Implementation>
     <LineIds Name="TrendSample">
-      <LineId Id="10" Count="0" />
-      <LineId Id="5" Count="0" />
-      <LineId Id="14" Count="0" />
+      <LineId Id="27" Count="2" />
       <LineId Id="11" Count="0" />
     </LineIds>
   </POU>

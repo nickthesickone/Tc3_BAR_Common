@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
+  <POU Name="FB_TrendChanel" Id="{b3200ce0-00f1-4afb-b8b9-80f3227ead07}" SpecialFunc="None">
+    <Declaration><![CDATA[//Функциональный блок для хранения и обработки данных, отображающихся на визуализациях в папке Treands/VISU
+FUNCTION_BLOCK FINAL FB_TrendChanel
+VAR CONSTANT
+	POINTS_NUMBER : UINT := 700; 		// Количество точек, из которых состоит график
+END_VAR
+VAR_INPUT 
+	InputData		: REAL; 			// Вход данных для отображения на графике
+	UpdatePeriod	: TIME:=T#100MS;	// Период обновления данных на графике
+	MinimalValue	: REAL;				// Максимальное значение данных по оси Y
+	MaximalValue	: REAL:=100;		// Максимальное значение данных по оси Y
+	TrendType		: E_Trend_Visu_Type;// Тип графика
+END_VAR
+VAR_OUTPUT
+	X_AxisNames 	: ARRAY [1..10] OF REAL;		// Текстовые метки для оси X
+	Y_AxisNames 	: ARRAY [1..15] OF WSTRING(15);	// Текстовые метки для оси Y
+END_VAR
+VAR
+	UpdateTime: TON;
+	pPoints   : POINTER TO ARRAY[1..POINTS_NUMBER] OF VisuStructPoint;
+	XY_points : ARRAY[1..POINTS_NUMBER] OF VisuStructPoint;
+	i: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF UpdatePeriod >= T#100MS THEN
+	UpdateTime(IN:=NOT UpdateTime.Q , PT:= UpdatePeriod);
+END_IF
+
+pPoints := ADR(XY_points);
+
+IF UpdateTime.Q THEN
+	X_AxisNames[1]:= MinimalValue;
+	X_AxisNames[7]:= MaximalValue;
+	FOR i:=2 TO 6 DO
+		X_AxisNames[i]:=MinimalValue + ((MaximalValue - MinimalValue)/6)*(i-1);
+	END_FOR
+	
+	FOR i:=1 TO 15 DO
+		Y_AxisNames[i]:=TIME_TO_WSTRING_HMI(UINT_TO_WORD(i) * UpdatePeriod * 70);
+		Y_AxisNames[i]:=WCONCAT("-",Y_AxisNames[i]);
+	END_FOR
+	
+	FOR i:=1 TO POINTS_NUMBER-1 DO
+		XY_points[POINTS_NUMBER - i + 1].iY:=XY_points[POINTS_NUMBER-i].iY;
+	END_FOR
+	CASE TrendType OF 
+		 0: XY_points[1].iY:=450-REAL_TO_INT((InputData - MinimalValue)*420/(MaximalValue - MinimalValue ));
+		 1: (*Добавится в случае добавления нового экрана графика*)
+	END_CASE
+
+END_IF]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{1c539689-3422-4e85-aced-5c92c789fc7e}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains 	: BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode 	: BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pPoints:=ADR(XY_points);
+
+FOR i:=1 TO POINTS_NUMBER DO
+	XY_points[i].iX:=UINT_TO_INT(70+i);
+	XY_points[i].iY:=450;
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_TrendChanel">
+      <LineId Id="229" Count="2" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="232" Count="18" />
+      <LineId Id="252" Count="1" />
+      <LineId Id="29" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_TrendChanel.FB_init">
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

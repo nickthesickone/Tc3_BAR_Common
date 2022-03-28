@@ -21,7 +21,7 @@
     <DocFormat>reStructuredText</DocFormat>
     <CompilerDefines>
     </CompilerDefines>
-    <ProjectVersion>0.4.0</ProjectVersion>
+    <ProjectVersion>0.5.0</ProjectVersion>
     <AutoUpdateVisuProfile>true</AutoUpdateVisuProfile>
     <Description>Library of implamentation common staff</Description>
     <!--    <OutputType>Exe</OutputType>
@@ -37,6 +37,7 @@
     <Folder Include="IO_terminals\DUTs" />
     <Folder Include="IO_terminals\VisuElements" />
     <Folder Include="InputVisu" />
+    <Folder Include="NC PTP Time Calculator" />
     <Folder Include="Trends" />
     <Folder Include="Project Information" />
     <Folder Include="Trends\FBs" />
@@ -132,6 +133,9 @@
       <SubType>Code</SubType>
       <DependentUpon>VisualizationManager.TcVMO</DependentUpon>
     </Compile>
+    <Compile Include="NC PTP Time Calculator\FB_7_SegTraj_Calculator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project Information\F_GetCompany.TcPOU">
       <SubType>Code</SubType>
       <SystemCall>true</SystemCall>
@@ -147,7 +151,7 @@
     <Compile Include="Trends\FBs\E_Trend_VISU_Type.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Trends\FBs\FB_TrandChanel.TcPOU">
+    <Compile Include="Trends\FBs\FB_TrendChanel.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Trends\FBs\VisuStructPoint.TcDUT">
@@ -232,8 +236,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
@@ -286,7 +290,7 @@
           <d n="SubKeys" t="Hashtable" />
           <d n="Values" t="Hashtable" ckt="String">
             <v>UnicodeStrings</v>
-            <v>false</v>
+            <v>true</v>
             <v>GlobalTextListFilePath</v>
             <v>""</v>
             <v>ExtendedSettings</v>
@@ -300,15 +304,15 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="Int32">System.Int32</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
   <!-- 

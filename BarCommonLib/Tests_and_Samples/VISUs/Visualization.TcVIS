@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
   <Visu Name="Visualization" Id="{c30fdee0-db42-47af-85f2-82c391702b8f}">
     <XmlArchive>
       <Data>
@@ -1252,7 +1252,7 @@
                 <v n="VisualElementIdentifier">"GenElemInst_51"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="FrameSelectionChangeInputAction[]">
                   <v>OnMouseClick</v>
                   <a cet="FrameSelectionChangeInputAction">
                     <o>
@@ -1294,18 +1294,16 @@
           <o n="GeneratedLMMDescriptions" t="GeneratedLanguageModelEntriesData">
             <o n="GeneratedVisuFbDescription" t="GenericFbDescription">
               <d n="FbMethods" t="CaseInsensitiveHashtable_1" ckt="String" cvt="Guid">
-                <v>HasVisibilityAccess</v>
-                <v>2266fcc9-9411-48c6-8027-ef87b4ff9032</v>
+                <v>GetUpdateRects</v>
+                <v>a37b37d1-6290-4642-bbf4-4e5b98dd73bf</v>
                 <v>ContainsPoint</v>
                 <v>2183d43e-a2bf-4afc-8e52-8888fe3e38a1</v>
-                <v>HasInputAccess</v>
-                <v>54856152-b02d-49f7-a0a7-2841cab60643</v>
+                <v>SetStaticState</v>
+                <v>ab045cb9-4719-484f-abba-a09a7932abab</v>
                 <v>HasInputAccessIntern</v>
                 <v>d603ff00-ed1a-5d9a-927c-2f9d43239e24</v>
                 <v>GetTooltip</v>
                 <v>72c734f9-9923-47ed-a21c-7262bac684c8</v>
-                <v>GetUpdateRects</v>
-                <v>a37b37d1-6290-4642-bbf4-4e5b98dd73bf</v>
                 <v>GetNamespace</v>
                 <v>cee49dc1-29e2-4c92-a34a-66be5b426797</v>
                 <v>GetTranslator</v>
@@ -1318,6 +1316,8 @@
                 <v>eba1fc33-b2a2-4078-93f4-7d040e2dde31</v>
                 <v>Paint</v>
                 <v>747a31dc-dbc9-4f98-ad9e-501c464d0ffe</v>
+                <v>HasVisibilityAccess</v>
+                <v>2266fcc9-9411-48c6-8027-ef87b4ff9032</v>
                 <v>GetElementArray</v>
                 <v>8d2f1f06-0e33-4ed7-915b-5e41788ead39</v>
                 <v>SetVisuFlagsInternal</v>
@@ -1330,14 +1330,14 @@
                 <v>777c1aca-a263-4b76-b697-28488279f88d</v>
                 <v>Initialize</v>
                 <v>e695e565-670d-4f15-beb8-f7c6f016fb27</v>
+                <v>HasInputAccess</v>
+                <v>54856152-b02d-49f7-a0a7-2841cab60643</v>
                 <v>HasVisibilityAccessIntern</v>
                 <v>bf6b159f-c936-598e-a08e-2c08bb609a83</v>
                 <v>GetSurroundingRect</v>
                 <v>52e40fe8-85e5-48fc-b35a-1fa0ea4b4fc6</v>
                 <v>ElementInfo</v>
                 <v>173b0804-309e-4562-abd3-ba32e19e99bc</v>
-                <v>SetStaticState</v>
-                <v>ab045cb9-4719-484f-abba-a09a7932abab</v>
                 <v>GetLocalUsergroup</v>
                 <v>f4fd4885-e513-493e-9b9c-ab27f15ee30c</v>
                 <v>GetName</v>
@@ -1368,10 +1368,10 @@
               <d n="FbMethods" t="CaseInsensitiveHashtable_1" ckt="String" cvt="Guid">
                 <v>FB_Init</v>
                 <v>bdf5f37e-b7c2-4da2-aed9-52bec26318fe</v>
-                <v>FB_Exit</v>
-                <v>69b3ded8-d012-4416-a9b3-f6eee9401514</v>
                 <v>FB_Reinit</v>
                 <v>e567075f-4da4-41d0-b94f-974127053dcc</v>
+                <v>FB_Exit</v>
+                <v>69b3ded8-d012-4416-a9b3-f6eee9401514</v>
               </d>
               <v n="FbName">"NotImportant"</v>
               <v n="FbGuid">{61eafe95-a5dd-44c3-bacf-3769d7643fc9}</v>
@@ -1424,11 +1424,6 @@
                 <v n="Text">"VAR_IN_OUT"</v>
               </o>
               <o>
-                <v n="Id">3L</v>
-                <n n="Tag" />
-                <v n="Text">"	"</v>
-              </o>
-              <o>
                 <v n="Id">1L</v>
                 <n n="Tag" />
                 <v n="Text">"END_VAR"</v>
@@ -1448,6 +1443,21 @@
             <v n="IdStep">1048576L</v>
             <l2 n="Inputs" />
           </o>
+          <o n="VisuSizeManager" t="VisualObjectSizeManager">
+            <d2 n="Size" ckt="Int32" cvt="VisualObjectSize">
+              <v>0</v>
+              <o>
+                <v n="Width">1024</v>
+                <v n="Height">600</v>
+              </o>
+              <v>1</v>
+              <o>
+                <v n="Width">1024</v>
+                <v n="Height">600</v>
+              </o>
+            </d2>
+            <v n="Version">0</v>
+          </o>
         </o>
       </Data>
       <TypeList>
@@ -1463,7 +1473,7 @@
         <Type n="DynamicArrayNode">{6c16f79c-dd98-4c29-b3ba-7042e3055542}</Type>
         <Type n="FontDescription">{896a5e54-96c3-433b-96d2-4f1442fef591}</Type>
         <Type n="FrameSelectionChangeInputAction">{4df7df60-c933-4318-97d1-72bcd264f510}</Type>
-        <Type n="FrameSelectionChangeInputAction[]">_3S.CoDeSys.VisualElem.FrameSelectionChangeInputAction[], VisualElem.plugin, Version=3.5.13.30, Culture=neutral, PublicKeyToken=null</Type>
+        <Type n="FrameSelectionChangeInputAction[]">_3S.CoDeSys.VisualElem.FrameSelectionChangeInputAction[], VisualElem.plugin, Version=3.5.13.32, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="FrameSelectionConfigurationType">{db81f68b-f091-4287-9583-0d25d85b481a}</Type>
         <Type n="GeneratedLanguageModelEntriesData">{703465dc-4679-4ff2-bcc3-c57d0a204da3}</Type>
         <Type n="GenericFbDescription">{40d6dd8d-dfd0-493a-8e29-c9a35e1e6539}</Type>
@@ -1472,7 +1482,6 @@
         <Type n="Guid">System.Guid</Type>
         <Type n="Hashtable">System.Collections.Hashtable</Type>
         <Type n="HotkeyConfiguration">{6b108d46-58af-4e41-a3f4-174d8f160cc4}</Type>
-        <Type n="IInputAction[]">_3S.CoDeSys.VisualElem.IInputAction[], VisualElem, Version=3.5.13.0, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="Int16">System.Int16</Type>
         <Type n="Int32">System.Int32</Type>
         <Type n="Int64">System.Int64</Type>
@@ -1497,6 +1506,8 @@
         <Type n="VisualFrameInfo">{7fd6515d-f891-4717-b53f-b14197c6706c}</Type>
         <Type n="VisualizationNode">{f8db32ff-bdd5-49e9-9014-6d9a6dea5d8c}</Type>
         <Type n="VisualObject">{f18bec89-9fef-401d-9953-2f11739a6808}</Type>
+        <Type n="VisualObjectSize">{6ad3e88f-aee2-4766-a7ea-a8790037ef51}</Type>
+        <Type n="VisualObjectSizeManager">{5f612b0e-b404-455f-8177-27864e9f5332}</Type>
       </TypeList>
     </XmlArchive>
     <ObjectProperties>

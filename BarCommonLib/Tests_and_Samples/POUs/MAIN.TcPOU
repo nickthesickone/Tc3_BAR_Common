@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
   <POU Name="MAIN" Id="{4c756481-7ec3-4e41-a368-ed1e2246c441}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -8,10 +8,12 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[AlarmSample();// Пример работы с авариями
-]]></ST>
+
+TrendSample();]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="2" Count="0" />
+      <LineId Id="11" Count="0" />
       <LineId Id="6" Count="0" />
     </LineIds>
   </POU>

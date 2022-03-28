@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
   <DUT Name="VisuStructPoint" Id="{367ee55d-3662-448a-bf5e-dd2ff10b2cc1}">
     <Declaration><![CDATA[TYPE VisuStructPoint :
 STRUCT

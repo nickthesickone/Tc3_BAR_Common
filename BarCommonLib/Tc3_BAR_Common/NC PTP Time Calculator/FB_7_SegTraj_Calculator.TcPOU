@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
+  <POU Name="FB_7_SegTraj_Calculator" Id="{1f363279-ccc6-4c58-a0e6-563778f5cd0d}" SpecialFunc="None">
+    <Declaration><![CDATA[//Расчет времен исполнения команд в NC PTP по семисегментной модели
+// Написано на основе книги 
+//
+//	Trajectory Planning for Automatic Machines and Robots
+//  Library of Congress Control Number: 2008934462
+// 	Luigi Biagiotti · Claudio Melchiorri
+//  Springer-Verlag Berlin Heidelberg 2008
+//	ISBN: 978-3-540-85628-3   e-ISBN: 978-3-540-85629-0
+//
+//стр. 79 Параграф 3.4 Trajectory with Double S Velocity Profile
+FUNCTION_BLOCK FB_7_SegTraj_Calculator
+VAR_INPUT
+	q_0, q_1 		: LREAL; 	// Начальная и конечная точки движния
+	v_0, v_1 		: LREAL; 	// Начальное и конечное значения скорости
+	v_max 			: LREAL:=1;	// Значение максимальной скорости
+	a_max, a_min 	: LREAL:=1; // Максимальное и минимальное значения ускорения
+	j_max, j_min 	: LREAL:=1; // Максимальное и минимальное значения рывка (производная от ускорения)
+END_VAR
+VAR_OUTPUT			
+	T_j1, T_j2	: LREAL;// Время рывка ускорения и замедления 
+	T_a		: LREAL; 	// Время ускорения
+	T_d		: LREAL; 	// Время замедления скорения
+	T_v		: LREAL; 	// Время постояной скорости
+	T 		: LREAL; 	// Расчетное время 
+	Error : BOOL; 		// Невозможно расчитать по введенным данным
+END_VAR
+VAR
+	V_lim 			: LREAL; 	// Максимальновозможная скорость расчитаная на основе входных данных
+	Delta 			: LREAL;
+	Gamma			: LREAL:=1;
+	Gamma_Shift 	: LREAL;
+	A_max_lim 		: LREAL;
+	
+	A_lim_a 		: LREAL;
+	A_lim_d 		: LREAL;
+	
+	Acc_MAX_CASE:   (A_max_IS_Reached,	A_max_IS_NOT_Reached);
+	Acc_MIN_CASE:   (A_Min_IS_Reached,	A_Min_IS_NOT_Reached);
+
+	i: UINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Error:=  a_max <> 0 AND v_max <> 0 AND j_max <> 0 AND v_max < v_0 ;
+
+T_a:= T_d:= T_v:= T:= T_j1:= T_j2:= 0;
+
+IF NOT Error THEN
+	//Первая итерация расчета переменных. Предполагается что максимальная скорость и ускорение достижимы.
+	Step_1_Vmax_Amax_IsReachable();	
+	
+	IF T_v > 0 THEN
+		// Максимальная скорость и ускорение достижимы. Конец расчета
+		T := T_a + T_v + T_d + 0.04;
+		RETURN;
+	ELSE
+		// Максимальная скорость и ускорение не достижимы
+		Gamma :=
+		Gamma_Shift := 1;
+		T_v := 0;
+		Step_3_Gamma_Decrease_Seq();
+		
+		IF T_a < 0 OR T_d < 0 THEN
+			Step_2_Ta_Less_Than_Zero();
+			Step_2_Td_Less_Than_Zero();
+			T := T_a + T_d + 0.04;
+			RETURN;
+		END_IF
+		
+		IF NOT (T_a > 2 * T_j1 AND T_d > 2 * T_j2) THEN
+			FOR i:=1 TO 20 DO
+				Step_3_Gamma_Decrease_Seq();
+				Gamma_Shift := Gamma_Shift/2;
+				IF NOT (T_a > 2 * T_j1 AND T_d > 2 * T_j2) THEN
+					Gamma := Gamma - Gamma_Shift;
+				ELSE
+					Gamma := Gamma + Gamma_Shift;
+				END_IF
+				IF Gamma > 1 THEN
+					Gamma := 1;
+				END_IF
+			END_FOR
+		END_IF
+		
+		IF T_a < 0 OR T_d < 0 THEN
+			Step_2_Ta_Less_Than_Zero();
+			Step_2_Td_Less_Than_Zero();
+			T := T_a + T_d + 0.04;
+			RETURN;
+		END_IF
+		
+		T := T_a + T_d+ 0.04;
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <Action Name="Step_1_Vmax_Amax_IsReachable" Id="{f4212177-000a-4165-8076-ee03343667f0}">
+      <Implementation>
+        <ST><![CDATA[IF (v_max - v_0) * j_max < a_max * a_max THEN
+	Acc_MAX_CASE := A_max_IS_NOT_Reached;
+ELSE
+	Acc_MAX_CASE := A_max_IS_Reached;
+END_IF
+
+CASE Acc_MAX_CASE OF
+	A_max_IS_NOT_Reached:
+		T_j1:= SQRT((v_max - v_0)/j_max);
+		T_a := 2 * T_j1;
+		
+	A_max_IS_Reached:
+		T_j1:= a_max/j_max;
+		T_a := T_j1 + (v_max - v_0)/a_max;
+END_CASE
+
+IF (v_max - v_1) * j_max < a_max * a_max THEN
+	Acc_MIN_CASE := A_Min_IS_NOT_Reached;
+ELSE
+	Acc_MIN_CASE := A_Min_IS_Reached;
+END_IF
+
+CASE Acc_MIN_CASE OF
+	A_Min_IS_NOT_Reached:
+	IF v_max >= v_1 THEN
+		T_j2:= SQRT((v_max - v_1)/j_max);
+		T_d := 2 * T_j2;
+	END_IF
+
+		
+	A_Min_IS_Reached:
+	IF v_max >= v_1 THEN
+		T_j2:= a_max/j_max;
+		T_d := T_j2 + (v_max - v_1)/a_max;
+	END_IF
+
+END_CASE
+
+T_v :=	(q_1 - q_0)/v_max - (T_a/2)*(1+ v_0/v_max) - (T_d/2)*(1 + v_1/v_max);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Step_2_Ta_Less_Than_Zero" Id="{eac82bc8-35f0-4060-9bed-3c7d076a2d97}">
+      <Implementation>
+        <ST><![CDATA[IF T_a < 0 AND v_0 > v_1 THEN
+	T_a := 0;
+	T_d := 2*(q_1-q_0)/(v_1+v_0);
+	T_j2:= (j_max*(q_1 - q_0) - SQRT(j_max*(j_max*(q_1-q_0)*(q_1-q_0) + (v_1+v_0)*(v_1+v_0)*(v_1-v_0))))/(j_max*(v_1+v_0));
+	
+	A_lim_d := - j_max * T_j2;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Step_2_Td_Less_Than_Zero" Id="{b4317c2e-cac7-498f-8127-db3362405433}">
+      <Implementation>
+        <ST><![CDATA[IF T_d < 0 AND v_0 > v_1 THEN
+	T_d := 0;
+	T_a := 2*(q_1-q_0)/(v_1+v_0);
+	T_j1:= (j_max*(q_1 - q_0) - SQRT(j_max*(j_max*(q_1-q_0)*(q_1-q_0) + (v_1+v_0)*(v_1+v_0)*(v_1-v_0))))/(j_max*(v_1+v_0));
+	
+	A_lim_a := j_max * T_j1;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Step_3_Gamma_Decrease_Seq" Id="{9b6cb4c5-b177-4a0f-b3c3-7a22dbe7d0c3}">
+      <Implementation>
+        <ST><![CDATA[T_j1 := T_j2 := a_max * Gamma / j_max;
+
+Delta := EXPT(a_max * Gamma,4)/(j_max *j_max)
+	   + 2*(v_0 * v_0 + v_1 * v_1)
+	   + a_max * Gamma *(4 * (q_1 - q_0) - 2 *(a_max * Gamma/j_max)*(v_0 + v_1));
+	   
+IF Delta >=0 THEN
+	T_a	:= (EXPT(a_max * Gamma,2)/j_max - 2*v_0 + SQRT(Delta))/(2 * a_max * Gamma);
+	T_d := (EXPT(a_max * Gamma,2)/j_max - 2*v_1 + SQRT(Delta))/(2 * a_max * Gamma);
+END_IF 
+]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="FB_7_SegTraj_Calculator">
+      <LineId Id="442" Count="2" />
+      <LineId Id="447" Count="1" />
+      <LineId Id="450" Count="3" />
+      <LineId Id="670" Count="0" />
+      <LineId Id="454" Count="2" />
+      <LineId Id="671" Count="0" />
+      <LineId Id="457" Count="0" />
+      <LineId Id="559" Count="0" />
+      <LineId Id="458" Count="4" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="463" Count="2" />
+      <LineId Id="530" Count="1" />
+      <LineId Id="534" Count="0" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="558" Count="0" />
+      <LineId Id="535" Count="0" />
+      <LineId Id="546" Count="0" />
+      <LineId Id="552" Count="1" />
+      <LineId Id="538" Count="0" />
+      <LineId Id="556" Count="0" />
+      <LineId Id="623" Count="0" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="536" Count="0" />
+      <LineId Id="533" Count="0" />
+      <LineId Id="539" Count="0" />
+      <LineId Id="541" Count="4" />
+      <LineId Id="540" Count="0" />
+      <LineId Id="481" Count="2" />
+      <LineId Id="282" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_7_SegTraj_Calculator.Step_1_Vmax_Amax_IsReachable">
+      <LineId Id="51" Count="23" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="84" Count="1" />
+      <LineId Id="76" Count="2" />
+      <LineId Id="88" Count="1" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="80" Count="2" />
+      <LineId Id="47" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_7_SegTraj_Calculator.Step_2_Ta_Less_Than_Zero">
+      <LineId Id="1" Count="1" />
+      <LineId Id="4" Count="1" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="3" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_7_SegTraj_Calculator.Step_2_Td_Less_Than_Zero">
+      <LineId Id="8" Count="3" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_7_SegTraj_Calculator.Step_3_Gamma_Decrease_Seq">
+      <LineId Id="11" Count="1" />
+      <LineId Id="2" Count="6" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

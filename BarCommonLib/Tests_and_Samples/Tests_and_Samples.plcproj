@@ -16,9 +16,13 @@
     <Implicit_Jitter_Distribution>{3468314a-c5b2-4e38-befb-2c26387025b1}</Implicit_Jitter_Distribution>
     <LibraryReferences>{a42d1d2d-36ec-4238-99b3-d9852c61cd04}</LibraryReferences>
     <CompilerDefines>VISU_USEWSTRING</CompilerDefines>
+    <Released>false</Released>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GlobalTextList.TcGTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVL.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\Alarms.TcGVL">
@@ -139,8 +143,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
@@ -193,7 +197,7 @@
           <d n="SubKeys" t="Hashtable" />
           <d n="Values" t="Hashtable" ckt="String">
             <v>UnicodeStrings</v>
-            <v>false</v>
+            <v>true</v>
             <v>GlobalTextListFilePath</v>
             <v>""</v>
             <v>ExtendedSettings</v>
@@ -207,15 +211,15 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="Int32">System.Int32</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>
